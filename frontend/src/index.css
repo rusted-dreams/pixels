@@ -3,6 +3,27 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+/* index.css */
+/* index.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; /* ❌ No horizontal scroll */
+  overflow-y: hidden;   /* ✅ Allow vertical scroll if needed */
+}
+
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
