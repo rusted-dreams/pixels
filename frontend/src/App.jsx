@@ -1,7 +1,6 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import { Button } from "./components/ui/button.jsx";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -9,6 +8,7 @@ function App() {
   return (
     <>
       <div className="bg-amber-600 ">hello world</div>
+      <Button>clicks me</Button>
     </>
   );
 }
