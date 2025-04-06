@@ -16,7 +16,7 @@ body,
   height: 100%;
   width: 100%;
   overflow-x: hidden; /* ❌ No horizontal scroll */
-  overflow-y: hidden;   /* ✅ Allow vertical scroll if needed */
+  overflow-y: hidden;   /*  No vertical scroll */
 }
 
 

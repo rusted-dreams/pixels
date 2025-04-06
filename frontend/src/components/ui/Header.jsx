@@ -4,8 +4,8 @@ import { Sun, HelpCircle, UserCircle2 } from "lucide-react"; // Make sure lucide
 function Header() {
   return (
     <header className="w-full h-18 bg-gray-200 border-b shadow-md flex items-center justify-between px-6">
-      {/* Left: Logo only */}
-      <div className="flex items-center">
+      {/* Left: Hamburger + Logo */}
+      <div className="flex items-center space-x-4">
         <h1 className="text-3xl font-bold text-gray-800">Pixels</h1>
       </div>
 
