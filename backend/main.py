@@ -9,7 +9,7 @@ app = FastAPI()
 async def root():
     return {"message": "Backend is up and running"}
 
-@app.post("/upload")
+@app.post("/api/upload")
 async def upload_image(file: UploadFile = File(...)):
     try:
         contents = await file.read()
