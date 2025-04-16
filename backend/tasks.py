@@ -228,7 +228,7 @@ def rotate_image(image_bytes: bytes, angle: float = 0.0, scale: float = 1.0) -> 
         raise Exception("Failed to encode image")
     return BytesIO(encoded_image.tobytes())
 
-def shear_image_horizontal(image_bytes: bytes, shear_factor: float = 0.0) -> BytesIO:
+def shear_image_horizontal(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     (h, w) = img.shape[:2]
@@ -240,7 +240,7 @@ def shear_image_horizontal(image_bytes: bytes, shear_factor: float = 0.0) -> Byt
         raise Exception("Failed to encode image")
     return BytesIO(encoded_image.tobytes())
 
-def shear_image_vertical(image_bytes: bytes, shear_factor: float = 0.0) -> BytesIO:
+def shear_image_vertical(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     (h, w) = img.shape[:2]
