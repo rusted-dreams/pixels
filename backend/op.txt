@@ -1,0 +1,4 @@
+Blurring
+Resizing
+contrast stretching
+filters 
