@@ -8,7 +8,7 @@ const ImageUpload = ({ selectedMethod, selectedEndpoint, onProcessed }) => {
   const handleUpload = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
-      setImage(uploadedFile);
+      setImage(URL.createObjectURL(uploadedFile));
       setFile(uploadedFile);
     }
   };
