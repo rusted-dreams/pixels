@@ -28,15 +28,15 @@ function App() {
     const formData = new FormData();
 
     // ✅ Optional: Log what's in FormData (not fully readable but useful for debugging)
-  for (let pair of formData.entries()) {
-    console.log(`${pair[0]}:`, pair[1]);
-  }
+    for (let pair of formData.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
 
     try {
       console.log(formData); // Log the file to ensure it's being appended correctly
-      
+
       const response = await axios.post(
-        `http://localhost:5000${selectedEndpoint}`, // ✅ Make sure your backend is running on port 8000
+        `http://localhost:8000${selectedEndpoint}`, // ✅ Make sure your backend is running on port 8000
         formData,
         {
           headers: {

@@ -8,7 +8,7 @@ const ImageUpload = ({ selectedMethod, selectedEndpoint, onProcessed }) => {
   const handleUpload = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
-      setImage(URL.createObjectURL(uploadedFile));
+      setImage(uploadedFile);
       setFile(uploadedFile);
     }
   };
@@ -22,11 +22,11 @@ const ImageUpload = ({ selectedMethod, selectedEndpoint, onProcessed }) => {
     if (!file || !selectedEndpoint) return;
 
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file);
 
     try {
       const response = await axios.post(
-        `http://localhost:5000${selectedEndpoint}`,
+        `http://localhost:8000${selectedEndpoint}`,
         formData,
         {
           headers: {
