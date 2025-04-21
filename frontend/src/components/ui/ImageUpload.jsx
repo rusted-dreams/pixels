@@ -16,6 +16,7 @@ const ImageUpload = ({ selectedMethod, selectedEndpoint, onProcessed }) => {
   const handleReset = () => {
     setImage(null);
     setFile(null);
+    onProcessed(null, null); // Clear processed result when resetting
   };
 
   const handleApply = async () => {
@@ -32,15 +33,26 @@ const ImageUpload = ({ selectedMethod, selectedEndpoint, onProcessed }) => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          responseType: "blob", // expecting image or zip as blob
+          responseType: "blob",
         }
       );
 
-      const imageURL = URL.createObjectURL(response.data);
-      console.log("✅ Processed Response URL:", imageURL);
-      onProcessed(imageURL); // send to App.jsx to display
+      const contentType = response.headers["content-type"];
+      const blob = new Blob([response.data], { type: contentType });
+      const imageURL = URL.createObjectURL(blob);
+
+      let fileType = "image";
+      if (contentType === "application/zip") {
+        fileType = "zip";
+      } else if (!contentType.startsWith("image/")) {
+        console.error("Unsupported file type:", contentType);
+        return;
+      }
+
+      console.log("Processed Response URL:", imageURL);
+      onProcessed(imageURL, fileType);
     } catch (error) {
-      console.error("❌ Error processing image:", error);
+      console.error("Error processing image:", error);
     }
   };
 
