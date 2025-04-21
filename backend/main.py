@@ -6,6 +6,25 @@ import tasks
 
 app = FastAPI()
 
+origins = [
+    "0.0.0.0"
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "http://localhost:5000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 @app.get("/")
 async def root():
@@ -54,11 +73,11 @@ async def resize(file: UploadFile = File(...)):
 
 
 @app.post("/api/task/grayscale")
-async def resize(file: UploadFile = File(...)):
+async def grayscale(file: UploadFile = File(...)):
     try:
         contents = await file.read()
-        resize = tasks.get_grayscale(contents)
-        return StreamingResponse(resize, media_type="image/png")
+        grayscale = tasks.get_grayscale(contents)
+        return StreamingResponse(grayscale, media_type="image/png")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")

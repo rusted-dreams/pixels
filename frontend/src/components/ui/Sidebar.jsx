@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import operationsData from "../../data/OperationsData";
 
-function Sidebar({ selectedMethod, setSelectedMethod }) {
+function Sidebar({ selectedMethod, setSelectedMethod, setSelectedEndpoint }) {
   const [openCategory, setOpenCategory] = useState(null);
 
   const toggleCategory = (category) => {
-    setOpenCategory(openCategory === category ? null : category);
+    setOpenCategory(prev => (prev === category ? null : category));
   };
 
-  const handleMethodClick = (method) => {
-    setSelectedMethod(method); // No backend call here
-    console.log("Selected Method:", method);
+  const handleMethodClick = (methodObj) => {
+    setSelectedMethod(methodObj.name);
+    setSelectedEndpoint(methodObj.endpoint);
+    console.log("🔘 Selected Method:", methodObj.name);
+    console.log("🔗 Selected Endpoint:", methodObj.endpoint);
   };
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Image Filters</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">🧪 Image Filters</h2>
 
       {operationsData.map((operation, index) => (
         <div key={index}>
@@ -34,18 +36,18 @@ function Sidebar({ selectedMethod, setSelectedMethod }) {
             }`}
           >
             <div className="pl-4 space-y-1">
-              {operation.methods.map((method, idx) => (
+              {operation.methods.map((methodObj, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleMethodClick(method)}
-                  title={`Apply ${method}`}
+                  onClick={() => handleMethodClick(methodObj)}
+                  title={`Apply ${methodObj.name}`}
                   className={`w-full text-left text-sm px-2 py-1 rounded transition-colors duration-200 ${
-                    selectedMethod === method
+                    selectedMethod === methodObj.name
                       ? "bg-blue-100 text-blue-700 font-semibold"
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  {method}
+                  {methodObj.name}
                 </button>
               ))}
             </div>
