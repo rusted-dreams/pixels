@@ -25,7 +25,7 @@ function App() {
 
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+        {/* Sidebar - 20% width */}
         <div className="w-1/5 min-w-[200px] bg-gray-100 border-r p-4">
           <Sidebar
             setSelectedMethod={setSelectedMethod}
@@ -34,21 +34,25 @@ function App() {
           />
         </div>
 
-        {/* Image Upload */}
-        <div className="flex-1 p-4 flex items-center justify-center bg-white overflow-auto">
-          <ImageUpload
-            selectedMethod={selectedMethod}
-            selectedEndpoint={selectedEndpoint}
-            onProcessed={handleProcessed}
-          />
+        {/* Image Upload - 40% width */}
+        <div className="w-[40%] p-4 bg-white overflow-auto border-r flex flex-col">
+          <div className="flex-1 flex items-center justify-center">
+            <ImageUpload
+              selectedMethod={selectedMethod}
+              selectedEndpoint={selectedEndpoint}
+              onProcessed={handleProcessed}
+            />
+          </div>
         </div>
 
-        {/* Processed Output */}
-        <div className="w-1/5 min-w-[200px] bg-gray-50 border-l p-4">
-          <ProcessedImage
-            processedFileUrl={processedFileUrl}
-            fileType={fileType}
-          />
+        {/* Processed Output - 40% width */}
+        <div className="w-[40%] bg-gray-50 p-4 flex flex-col">
+          <div className="flex-1 flex items-center justify-center">
+            <ProcessedImage
+              processedFileUrl={processedFileUrl}
+              fileType={fileType}
+            />
+          </div>
         </div>
       </div>
 
