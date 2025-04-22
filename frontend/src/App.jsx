@@ -51,6 +51,7 @@ function App() {
             <ProcessedImage
               processedFileUrl={processedFileUrl}
               fileType={fileType}
+              selectedMethod={selectedEndpoint} // <-- FIXED
             />
           </div>
         </div>
