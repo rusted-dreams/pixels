@@ -36,7 +36,7 @@ function App() {
 
         {/* Image Upload - 40% width */}
         <div className="w-[40%] p-4 bg-white overflow-auto border-r flex flex-col">
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-start justify-center">
             <ImageUpload
               selectedMethod={selectedMethod}
               selectedEndpoint={selectedEndpoint}
@@ -47,11 +47,11 @@ function App() {
 
         {/* Processed Output - 40% width */}
         <div className="w-[40%] bg-gray-50 p-4 flex flex-col">
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-start justify-center">
             <ProcessedImage
               processedFileUrl={processedFileUrl}
               fileType={fileType}
-              selectedMethod={selectedEndpoint} // <-- FIXED
+              selectedMethod={selectedEndpoint}
             />
           </div>
         </div>
