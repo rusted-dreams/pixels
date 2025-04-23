@@ -274,30 +274,6 @@ def rotate_image(image_bytes: bytes, angle: float = 0.0, scale: float = 1.0) -> 
         raise Exception("Failed to encode image")
     return BytesIO(encoded_image.tobytes())
 
-def shear_image_horizontal(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    (h, w) = img.shape[:2]
-    shear_matrix = np.float32([[1, 0, 0], [shear_factor, 1, 0]])
-    new_height = int(h + abs(shear_factor) * w)
-    sheared_img = cv2.warpAffine(img, shear_matrix, (w, new_height))
-    success, encoded_image = cv2.imencode(".png", sheared_img)
-    if not success:
-        raise Exception("Failed to encode image")
-    return BytesIO(encoded_image.tobytes())
-
-def shear_image_vertical(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    (h, w) = img.shape[:2]
-    shear_matrix = np.float32([[1, shear_factor, 0], [0, 1, 0]])
-    new_width = int(w + abs(shear_factor) * h)
-    sheared_img = cv2.warpAffine(img, shear_matrix, (new_width, h))
-    success, encoded_image = cv2.imencode(".png", sheared_img)
-    if not success:
-        raise Exception("Failed to encode image")
-    return BytesIO(encoded_image.tobytes())
-
 
 def get_rgb_channels(image_bytes: bytes) -> BytesIO:
     # Decode the input image
@@ -409,3 +385,85 @@ def get_median_filter(image_bytes: bytes,
 
     median = cv2.medianBlur(gray, kernel_size)
     return encode_image(median)
+
+def decode_and_apply_power_law(image_bytes: bytes, gamma: float = 1.0):
+    # Decode image from bytes
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Normalize the image to range [0, 1]
+    img_normalized = img / 255.0
+
+    # Apply power law transformation
+    img_gamma_corrected = np.power(img_normalized, gamma)
+
+    # Scale back to range [0, 255]
+    img_result = np.uint8(img_gamma_corrected * 255)
+
+    return img_result
+
+def get_scaled_image(image_bytes: bytes, fx: float, fy: float):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    img_scaled = cv2.resize(img, None, fx=fx, fy=fy, interpolation=cv2.INTER_LINEAR)
+
+    _, buffer = cv2.imencode('.png', img_scaled)
+    return BytesIO(buffer.tobytes())
+
+def get_rotated_image(image_bytes: bytes, angle: float):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    (h, w) = img.shape[:2]
+    center = (w // 2, h // 2)
+
+    matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    rotated = cv2.warpAffine(img, matrix, (w, h))
+
+    _, buffer = cv2.imencode('.png', rotated)
+    return BytesIO(buffer.tobytes())
+
+def get_translated_image(image_bytes: bytes, tx: int, ty: int):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    rows, cols = img.shape[:2]
+    matrix = np.float32([[1, 0, tx], [0, 1, ty]])
+    translated = cv2.warpAffine(img, matrix, (cols, rows))
+
+    _, buffer = cv2.imencode('.png', translated)
+    return BytesIO(buffer.tobytes())
+
+def get_horizontal_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    (h, w) = img.shape[:2]
+    shear_matrix = np.float32([[1, 0, 0], [shear_factor, 1, 0]])
+    new_height = int(h + abs(shear_factor) * w)
+    sheared_img = cv2.warpAffine(img, shear_matrix, (w, new_height))
+    success, encoded_image = cv2.imencode(".png", sheared_img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded_image.tobytes())
+
+
+def get_vertical_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    (h, w) = img.shape[:2]
+    shear_matrix = np.float32([[1, shear_factor, 0], [0, 1, 0]])
+    new_width = int(w + abs(shear_factor) * h)
+    sheared_img = cv2.warpAffine(img, shear_matrix, (new_width, h))
+    success, encoded_image = cv2.imencode(".png", sheared_img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded_image.tobytes())
