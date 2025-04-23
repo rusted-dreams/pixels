@@ -1,4 +1,3 @@
-
 import { ProcessingTask } from "@/lib/types";
 
 /**
@@ -63,7 +62,7 @@ export const processingTasks: ProcessingTask[] = [
         min: 1,
         max: 31,
         step: 2,
-        description: "Size of the kernel (must be odd)"
+        description: "Size of the kernel (must be odd)",
       },
       {
         id: "sigmaX",
@@ -73,9 +72,9 @@ export const processingTasks: ProcessingTask[] = [
         min: 0,
         max: 10,
         step: 0.1,
-        description: "Standard deviation in X direction"
-      }
-    ]
+        description: "Standard deviation in X direction",
+      },
+    ],
   },
   {
     id: "sobel",
@@ -92,7 +91,7 @@ export const processingTasks: ProcessingTask[] = [
         min: 0,
         max: 2,
         step: 1,
-        description: "Order of derivative in X direction"
+        description: "Order of derivative in X direction",
       },
       {
         id: "dy",
@@ -102,7 +101,7 @@ export const processingTasks: ProcessingTask[] = [
         min: 0,
         max: 2,
         step: 1,
-        description: "Order of derivative in Y direction"
+        description: "Order of derivative in Y direction",
       },
       {
         id: "ksize",
@@ -112,9 +111,9 @@ export const processingTasks: ProcessingTask[] = [
         min: 1,
         max: 31,
         step: 2,
-        description: "Size of the Sobel kernel"
-      }
-    ]
+        description: "Size of the Sobel kernel",
+      },
+    ],
   },
   {
     id: "prewitt",
@@ -131,11 +130,11 @@ export const processingTasks: ProcessingTask[] = [
         options: [
           { value: "x", label: "X direction" },
           { value: "y", label: "Y direction" },
-          { value: "both", label: "Both directions" }
+          { value: "both", label: "Both directions" },
         ],
-        description: "Direction for edge detection"
-      }
-    ]
+        description: "Direction for edge detection",
+      },
+    ],
   },
   {
     id: "laplacian-filter",
@@ -152,7 +151,7 @@ export const processingTasks: ProcessingTask[] = [
         min: 1,
         max: 31,
         step: 2,
-        description: "Size of the Laplacian kernel"
+        description: "Size of the Laplacian kernel",
       },
       {
         id: "scale",
@@ -162,10 +161,50 @@ export const processingTasks: ProcessingTask[] = [
         min: 0.1,
         max: 10,
         step: 0.1,
-        description: "Scale factor for the computed Laplacian values"
-      }
-    ]
+        description: "Scale factor for the computed Laplacian values",
+      },
+    ],
   },
+
+  {
+    id: "midpoint-filter",
+    name: "midpoint Edge Detector",
+    description: "Apply midpoint edge detection to an image",
+    endpoint: "/api/task/midpoint-filter",
+    category: "filters",
+    parameters: [
+      {
+        id: "ksize",
+        name: "Kernel Size",
+        type: "number",
+        defaultValue: 3,
+        min: 1,
+        max: 31,
+        step: 2,
+        description: "Size of the midpoint kernel",
+      },
+    ],
+  },
+  {
+    id: "median-filter",
+    name: "median Edge Detector",
+    description: "Apply median edge detection to an image",
+    endpoint: "/api/task/median-filter",
+    category: "filters",
+    parameters: [
+      {
+        id: "ksize",
+        name: "Kernel Size",
+        type: "number",
+        defaultValue: 3,
+        min: 1,
+        max: 31,
+        step: 2,
+        description: "Size of the median kernel",
+      },
+    ],
+  },
+
   {
     id: "denoise",
     name: "Noise Removal",
@@ -181,9 +220,9 @@ export const processingTasks: ProcessingTask[] = [
         min: 1,
         max: 30,
         step: 1,
-        description: "Strength of denoising"
-      }
-    ]
+        description: "Strength of denoising",
+      },
+    ],
   },
   {
     id: "xor",

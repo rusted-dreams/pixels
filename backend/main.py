@@ -215,3 +215,40 @@ async def prewitt_filter(file: UploadFile = File(...), axis: str = Form("x")):
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prewitt filter failed: {str(e)}")
+    
+
+@app.post("/api/task/midpoint-filter")
+async def midpoint_filter(file: UploadFile = File(...), ksize: int = Form(0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_midpoint_filter(contents, ksize)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")
+@app.post("/api/task/max-filter")
+
+async def max_filter(file: UploadFile = File(...), ksize: int = Form(0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_max_filter_filter(contents, ksize)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")
+    
+@app.post("/api/task/min-filter")
+async def min_filter(file: UploadFile = File(...), ksize: int = Form(0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_min_filter(contents, ksize)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")
+    
+@app.post("/api/task/median-filter")
+async def median_filter(file: UploadFile = File(...), ksize: int = Form(0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_median_filter(contents, ksize)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")

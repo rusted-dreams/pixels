@@ -40,9 +40,14 @@ def get_prewitt(image_bytes: bytes, axis: str) -> BytesIO:
         prewitt = cv2.filter2D(gray, -1, kernelx)
     elif axis == "y":
         prewitt = cv2.filter2D(gray, -1, kernely)
+    elif axis == "both":
+        gx = cv2.filter2D(gray, cv2.CV_64F, kernelx)
+        gy = cv2.filter2D(gray, cv2.CV_64F, kernely)
+        # Combine gradients via Euclidean norm
+        prewitt = np.sqrt(gx**2 + gy**2)
     else:
         raise ValueError("Invalid axis. Use 'x' or 'y'.")
-
+    prewitt = np.uint8(np.clip(prewitt, 0, 255))
     return encode_image(prewitt)
 
 def get_negative(image_bytes: bytes) -> BytesIO:
@@ -294,10 +299,6 @@ def shear_image_vertical(image_bytes: bytes, shear_factor: float = 0.5) -> Bytes
     return BytesIO(encoded_image.tobytes())
 
 
-
-
-
-
 def get_rgb_channels(image_bytes: bytes) -> BytesIO:
     # Decode the input image
     nparr = np.frombuffer(image_bytes, np.uint8)
@@ -353,3 +354,58 @@ def get_laplacian(image_bytes: bytes) -> BytesIO:
     
     # Wrap the encoded image in BytesIO to return as response
     return BytesIO(encoded_image.tobytes())
+
+
+def get_max_filter(image_bytes: bytes,
+                   kernel_size: int = 3) -> BytesIO:
+    img = decode_image(image_bytes)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    if kernel_size < 1 or kernel_size % 2 == 0:
+        raise ValueError("kernel_size must be an odd integer >= 3")
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+    maxed = cv2.dilate(gray, kernel)
+    return encode_image(maxed)
+
+
+def get_min_filter(image_bytes: bytes,
+                   kernel_size: int = 3) -> BytesIO:
+    img = decode_image(image_bytes)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    if kernel_size < 1 or kernel_size % 2 == 0:
+        raise ValueError("kernel_size must be an odd integer >= 3")
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+    mined = cv2.erode(gray, kernel)
+    return encode_image(mined)
+
+
+def get_midpoint_filter(image_bytes: bytes,
+                        kernel_size: int = 3) -> BytesIO:
+    img = decode_image(image_bytes)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    if kernel_size < 1 or kernel_size % 2 == 0:
+        raise ValueError("kernel_size must be an odd integer >= 3")
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+    maxed = cv2.dilate(gray, kernel).astype(np.float64)
+    mined = cv2.erode(gray, kernel).astype(np.float64)
+
+    midpoint = ((maxed + mined) / 2.0)
+    midpoint = np.uint8(np.clip(midpoint, 0, 255))
+    return encode_image(midpoint)
+
+def get_median_filter(image_bytes: bytes,
+                      kernel_size: int = 3) -> BytesIO:
+    
+    img = decode_image(image_bytes)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    if kernel_size < 1 or kernel_size % 2 == 0:
+        raise ValueError("kernel_size must be an odd integer >= 3")
+
+    median = cv2.medianBlur(gray, kernel_size)
+    return encode_image(median)

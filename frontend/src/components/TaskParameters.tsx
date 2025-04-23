@@ -23,8 +23,7 @@ const TaskParameters = ({ parameters, onChange }: TaskParametersProps) => {
   >({});
 
   useEffect(() => {
-    // Initialize with default values
-    if (parameters) {
+    if (parameters && Object.keys(paramValues).length === 0) {
       const defaultValues = parameters.reduce((acc, param) => {
         acc[param.id] = param.defaultValue;
         return acc;
