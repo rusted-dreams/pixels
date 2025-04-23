@@ -1,9 +1,9 @@
 - [x] logarithmic transformation
 - [ ] negative transformation
-- [ ] power law transformation
-- [ ] scaling
-- [ ] rotation
-- [ ] translation
+- [x] power law transformation
+- [x] scaling
+- [x] rotation
+- [x] translation
 - [ ] shear
 - [ ] max filter
 - [ ] min filter

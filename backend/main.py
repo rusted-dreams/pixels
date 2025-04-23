@@ -160,24 +160,22 @@ async def resize(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
     
 @app.post("/api/task/shear-image-horizontal")
-async def resize(file: UploadFile = File(...)):
+async def horizontal_shear(file: UploadFile = File(...), shear_x: float = Form(0.0)):
     try:
         contents = await file.read()
-        resize = tasks.shear_image_horizontal(contents)
-        return StreamingResponse(resize, media_type="image/png")
-
+        output = tasks.get_horizontal_sheared_image(contents, shear_x)
+        return StreamingResponse(output, media_type="image/png")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Horizontal shearing failed: {str(e)}")
 
 @app.post("/api/task/shear-image-vertical")
-async def shear_vertical(file: UploadFile = File(...)):
+async def vertical_shear(file: UploadFile = File(...), shear_y: float = Form(0.0)):
     try:
         contents = await file.read()
-        resize = tasks.shear_image_vertical(contents)
-        return StreamingResponse(resize, media_type="image/png")
-
+        output = tasks.get_vertical_sheared_image(contents, shear_y)
+        return StreamingResponse(output, media_type="image/png")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Vertical shearing failed: {str(e)}")
 
 @app.post("/api/task/laplacian-filter")
 async def laplacian_filter(file: UploadFile = File(...)):
@@ -262,3 +260,29 @@ async def power_law_transform(file: UploadFile = File(...), gamma: float = Form(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Power law transformation failed: {str(e)}")
 
+@app.post("/api/task/scale")
+async def scale_image(file: UploadFile = File(...), fx: float = Form(1.0), fy: float = Form(1.0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_scaled_image(contents, fx, fy)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Scaling failed: {str(e)}")
+    
+@app.post("/api/task/rotate")
+async def rotate_image(file: UploadFile = File(...), angle: float = Form(0.0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_rotated_image(contents, angle)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Rotation failed: {str(e)}")
+    
+@app.post("/api/task/translate")
+async def translate_image(file: UploadFile = File(...), tx: int = Form(0), ty: int = Form(0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_translated_image(contents, tx, ty)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
