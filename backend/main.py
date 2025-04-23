@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from img_upload_utils import upload_image_to_azure
 import tasks
+import numpy as np
 
 app = FastAPI()
 
@@ -343,3 +344,101 @@ async def high_boost_filter(file: UploadFile = File(...), boost_factor: float = 
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"High Boost filter failed: {str(e)}")
+
+@app.post("/api/task/canny")
+async def canny_edge(file: UploadFile = File(...), threshold1: int = Form(100), threshold2: int = Form(200)):
+    try:
+        contents = await file.read()
+        output = tasks.canny_edge_detection(contents, threshold1, threshold2)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Canny edge detection failed: {str(e)}")
+
+@app.post("/api/task/harris")
+async def harris_corner(file: UploadFile = File(...), block_size: int = Form(2), ksize: int = Form(3), k: float = Form(0.04), threshold: float = Form(0.01)):
+    try:
+        contents = await file.read()
+        output = tasks.harris_corner_detection(contents, block_size, ksize, k, threshold)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Harris corner detection failed: {str(e)}")
+
+@app.post("/api/task/hough-circles")
+async def hough_circles(
+    file: UploadFile = File(...),
+    dp: float = Form(1.2),
+    min_dist: int = Form(100),
+    param1: int = Form(100),
+    param2: int = Form(30),
+    min_radius: int = Form(0),
+    max_radius: int = Form(0)
+):
+    try:
+        contents = await file.read()
+        output = tasks.hough_circle_transform(contents, dp, min_dist, param1, param2, min_radius, max_radius)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Hough circle transform failed: {str(e)}")
+
+@app.post("/api/task/hough-lines")
+async def hough_lines(
+    file: UploadFile = File(...),
+    rho: float = Form(1),
+    theta: float = Form(np.pi / 180),
+    threshold: int = Form(100)
+):
+    try:
+        contents = await file.read()
+        output = tasks.hough_line_transform(contents, rho, theta, threshold)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Hough line transform failed: {str(e)}")
+
+@app.post("/api/task/dilation")
+async def dilation(file: UploadFile = File(...), kernel_size: int = Form(5), iterations: int = Form(1)):
+    try:
+        contents = await file.read()
+        output = tasks.dilation_operation(contents, kernel_size, iterations)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Dilation failed: {str(e)}")
+
+
+@app.post("/api/task/erosion")
+async def erosion(file: UploadFile = File(...), kernel_size: int = Form(5), iterations: int = Form(1)):
+    try:
+        contents = await file.read()
+        output = tasks.erosion_operation(contents, kernel_size, iterations)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erosion failed: {str(e)}")
+
+
+@app.post("/api/task/opening")
+async def opening(file: UploadFile = File(...), kernel_size: int = Form(5)):
+    try:
+        contents = await file.read()
+        output = tasks.opening_operation(contents, kernel_size)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Opening failed: {str(e)}")
+
+
+@app.post("/api/task/closing")
+async def closing(file: UploadFile = File(...), kernel_size: int = Form(5)):
+    try:
+        contents = await file.read()
+        output = tasks.closing_operation(contents, kernel_size)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Closing failed: {str(e)}")
+
+
+@app.post("/api/task/hitmiss")
+async def hitmiss(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        output = tasks.hit_miss_transform(contents)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Hit-or-Miss failed: {str(e)}")
