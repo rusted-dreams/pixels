@@ -443,35 +443,27 @@ def get_translated_image(image_bytes: bytes, tx: int, ty: int):
     _, buffer = cv2.imencode('.png', translated)
     return BytesIO(buffer.tobytes())
 
-def get_horizontal_sheared_image(image_bytes: bytes, shear_x: float):
+def get_horizontal_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    if img is None:
-        raise Exception("Invalid image data")
-
-    rows, cols = img.shape[:2]
-    matrix = np.float32([[1, shear_x, 0],
-                         [0, 1, 0]])
-
-    new_cols = int(cols + abs(shear_x * rows))
-    sheared = cv2.warpAffine(img, matrix, (new_cols, rows))
-
-    _, buffer = cv2.imencode('.png', sheared)
-    return BytesIO(buffer.tobytes())
+    (h, w) = img.shape[:2]
+    shear_matrix = np.float32([[1, 0, 0], [shear_factor, 1, 0]])
+    new_height = int(h + abs(shear_factor) * w)
+    sheared_img = cv2.warpAffine(img, shear_matrix, (w, new_height))
+    success, encoded_image = cv2.imencode(".png", sheared_img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded_image.tobytes())
 
 
-def get_vertical_sheared_image(image_bytes: bytes, shear_y: float):
+def get_vertical_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    if img is None:
-        raise Exception("Invalid image data")
-
-    rows, cols = img.shape[:2]
-    matrix = np.float32([[1, 0, 0],
-                         [shear_y, 1, 0]])
-
-    new_rows = int(rows + abs(shear_y * cols))
-    sheared = cv2.warpAffine(img, matrix, (cols, new_rows))
-
-    _, buffer = cv2.imencode('.png', sheared)
-    return BytesIO(buffer.tobytes())
+    (h, w) = img.shape[:2]
+    shear_matrix = np.float32([[1, shear_factor, 0], [0, 1, 0]])
+    new_width = int(w + abs(shear_factor) * h)
+    sheared_img = cv2.warpAffine(img, shear_matrix, (new_width, h))
+    success, encoded_image = cv2.imencode(".png", sheared_img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded_image.tobytes())
