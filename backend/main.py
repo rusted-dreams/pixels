@@ -255,7 +255,7 @@ async def median_filter(file: UploadFile = File(...), ksize: int = Form(0)):
 async def power_law_transform(file: UploadFile = File(...), gamma: float = Form(1.0)):
     try:
         contents = await file.read()
-        output = tasks.get_power_law_transformed(contents, gamma)
+        output = tasks.get_power_law_transformation(contents, gamma)
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Power law transformation failed: {str(e)}")
