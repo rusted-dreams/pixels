@@ -223,12 +223,12 @@ async def midpoint_filter(file: UploadFile = File(...), ksize: int = Form(0)):
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")
+    
 @app.post("/api/task/max-filter")
-
 async def max_filter(file: UploadFile = File(...), ksize: int = Form(0)):
     try:
         contents = await file.read()
-        output = tasks.get_max_filter_filter(contents, ksize)
+        output = tasks.get_max_filter(contents, ksize)
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")

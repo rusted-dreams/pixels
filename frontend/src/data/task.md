@@ -4,10 +4,11 @@
 - [x] scaling
 - [x] rotation
 - [x] translation
-- [ ] shear
-- [ ] max filter
-- [ ] min filter
-- [ ] midpoint filter
+- [x] shear
+- [x] max filter
+- [x] min filter
+- [x] midpoint filter
+- [x] median filter
 - [ ]  add gaussian noise raylegh noise
 - [ ]  laplacian of gaussian
 - [ ]  high pass filter
