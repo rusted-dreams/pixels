@@ -286,3 +286,60 @@ async def translate_image(file: UploadFile = File(...), tx: int = Form(0), ty: i
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
+    
+@app.post("/api/task/noise/gaussian")
+async def gaussian_noise(file: UploadFile = File(...), mean: float = Form(0.0), std: float = Form(1.0)):
+    try:
+        contents = await file.read()
+        output = tasks.add_gaussian_noise(contents, mean, std)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gaussian noise addition failed: {str(e)}")
+
+
+@app.post("/api/task/noise/rayleigh")
+async def rayleigh_noise(file: UploadFile = File(...), scale: float = Form(1.0)):
+    try:
+        contents = await file.read()
+        output = tasks.add_rayleigh_noise(contents, scale)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Rayleigh noise addition failed: {str(e)}")
+        
+@app.post("/api/task/log")
+async def laplacian_of_gaussian_filter(file: UploadFile = File(...), kernel_size: int = Form(5), sigma: float = Form(1.0)):
+    try:
+        contents = await file.read()
+        output = tasks.laplacian_of_gaussian(contents, kernel_size, sigma)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Laplacian of Gaussian filter failed: {str(e)}")
+
+
+@app.post("/api/task/highpass")
+async def high_pass_filter(file: UploadFile = File(...), kernel_size: int = Form(5)):
+    try:
+        contents = await file.read()
+        output = tasks.high_pass_filter(contents, kernel_size)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"High pass filter failed: {str(e)}")
+
+
+@app.post("/api/task/lowpass")
+async def low_pass_filter(file: UploadFile = File(...), kernel_size: int = Form(5)):
+    try:
+        contents = await file.read()
+        output = tasks.low_pass_filter(contents, kernel_size)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Low pass filter failed: {str(e)}")
+
+@app.post("/api/task/highboost")
+async def high_boost_filter(file: UploadFile = File(...), boost_factor: float = Form(2.0), kernel_size: int = Form(5)):
+    try:
+        contents = await file.read()
+        output = tasks.high_boost_filter(contents, boost_factor, kernel_size)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"High Boost filter failed: {str(e)}")

@@ -467,3 +467,95 @@ def get_vertical_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) ->
     if not success:
         raise Exception("Failed to encode image")
     return BytesIO(encoded_image.tobytes())
+
+def add_gaussian_noise(image_bytes: bytes, mean: float = 0.0, std: float = 1.0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Generate Gaussian noise
+    noise = np.random.normal(mean, std, img.shape).astype(np.uint8)
+    noisy_img = cv2.add(img, noise)
+
+    _, buffer = cv2.imencode('.png', noisy_img)
+    return BytesIO(buffer.tobytes())
+
+# Rayleigh Noise
+def add_rayleigh_noise(image_bytes: bytes, scale: float = 1.0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Generate Rayleigh noise
+    noise = np.random.rayleigh(scale, img.shape).astype(np.uint8)
+    noisy_img = cv2.add(img, noise)
+
+    _, buffer = cv2.imencode('.png', noisy_img)
+    return BytesIO(buffer.tobytes())
+
+def laplacian_of_gaussian(image_bytes: bytes, kernel_size: int = 5, sigma: float = 1.0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply Gaussian blur and then Laplacian filter
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), sigma)
+    laplacian = cv2.Laplacian(blurred, cv2.CV_64F)
+
+    # Convert to uint8 (8-bit) image
+    laplacian = cv2.convertScaleAbs(laplacian)
+
+    _, buffer = cv2.imencode('.png', laplacian)
+    return BytesIO(buffer.tobytes())
+
+def high_pass_filter(image_bytes: bytes, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply a Gaussian blur (low pass) to get the smoothed image
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+    
+    # High pass filter is the original image minus the blurred (low-pass) image
+    high_pass = cv2.subtract(img, blurred)
+
+    _, buffer = cv2.imencode('.png', high_pass)
+    return BytesIO(buffer.tobytes())
+
+def low_pass_filter(image_bytes: bytes, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply Gaussian blur (Low pass filter)
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+
+    _, buffer = cv2.imencode('.png', blurred)
+    return BytesIO(buffer.tobytes())
+
+def high_boost_filter(image_bytes: bytes, boost_factor: float = 2.0, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply a Gaussian blur (low pass filter) to get the smoothed image
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+    
+    # High pass filter is the original image minus the blurred (low-pass) image
+    high_pass = cv2.subtract(img, blurred)
+    
+    # High Boost Filter: add the boost factor multiplied high-pass component to the original image
+    boosted_image = cv2.addWeighted(img, 1 + boost_factor, high_pass, -boost_factor, 0)
+
+    # Ensure the image is valid by clipping pixel values to stay within valid range [0, 255]
+    boosted_image = np.clip(boosted_image, 0, 255).astype(np.uint8)
+
+    _, buffer = cv2.imencode('.png', boosted_image)
+    return BytesIO(buffer.tobytes())
+
