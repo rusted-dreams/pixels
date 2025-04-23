@@ -12,6 +12,20 @@ export interface ProcessingTask {
   category: TaskCategory;
   returnsZip?: boolean; // Whether the task returns multiple images in a ZIP file
   requiresMultipleImages?: boolean; // Whether the task requires multiple images as input
+  parameters?: TaskParameter[]; // Optional parameters for the task
+}
+
+// Task parameter definition
+export interface TaskParameter {
+  id: string;
+  name: string;
+  type: "number" | "select";
+  defaultValue: number | string;
+  min?: number; // For number type
+  max?: number; // For number type
+  step?: number; // For number type
+  options?: Array<{value: string; label: string}>; // For select type
+  description?: string;
 }
 
 // Task categories

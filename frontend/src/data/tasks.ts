@@ -1,3 +1,4 @@
+
 import { ProcessingTask } from "@/lib/types";
 
 /**
@@ -33,28 +34,48 @@ export const processingTasks: ProcessingTask[] = [
     endpoint: "/api/task/binary",
     category: "basic",
   },
-
   {
     id: "shear-vertical",
-    name: "shear image vertical",
-    description: "shear image vertical",
+    name: "Shear Image Vertical",
+    description: "Shear image vertical",
     endpoint: "/api/task/shear-image-vertical",
     category: "basic",
   },
-
   {
     id: "shear-horizontal",
-    name: "shear image horizontal",
-    description: "shear image horizontal",
+    name: "Shear Image Horizontal",
+    description: "Shear image horizontal",
     endpoint: "/api/task/shear-image-horizontal",
     category: "basic",
   },
   {
     id: "blur",
-    name: "Blur",
+    name: "Gaussian Blur",
     description: "Apply a Gaussian blur to an image",
-    endpoint: "/api/task/gaussian-blur",
+    endpoint: "/api/task/gaussian",
     category: "enhancement",
+    parameters: [
+      {
+        id: "ksize",
+        name: "Kernel Size",
+        type: "number",
+        defaultValue: 5,
+        min: 1,
+        max: 31,
+        step: 2,
+        description: "Size of the kernel (must be odd)"
+      },
+      {
+        id: "sigmaX",
+        name: "Sigma X",
+        type: "number",
+        defaultValue: 0,
+        min: 0,
+        max: 10,
+        step: 0.1,
+        description: "Standard deviation in X direction"
+      }
+    ]
   },
   {
     id: "sobel",
@@ -62,6 +83,38 @@ export const processingTasks: ProcessingTask[] = [
     description: "Apply Sobel edge detection to an image",
     endpoint: "/api/task/sobel",
     category: "filters",
+    parameters: [
+      {
+        id: "dx",
+        name: "X Derivative",
+        type: "number",
+        defaultValue: 1,
+        min: 0,
+        max: 2,
+        step: 1,
+        description: "Order of derivative in X direction"
+      },
+      {
+        id: "dy",
+        name: "Y Derivative",
+        type: "number",
+        defaultValue: 0,
+        min: 0,
+        max: 2,
+        step: 1,
+        description: "Order of derivative in Y direction"
+      },
+      {
+        id: "ksize",
+        name: "Kernel Size",
+        type: "number",
+        defaultValue: 3,
+        min: 1,
+        max: 31,
+        step: 2,
+        description: "Size of the Sobel kernel"
+      }
+    ]
   },
   {
     id: "prewitt",
@@ -69,13 +122,49 @@ export const processingTasks: ProcessingTask[] = [
     description: "Apply Prewitt edge detection to an image",
     endpoint: "/api/task/prewitt",
     category: "filters",
+    parameters: [
+      {
+        id: "axis",
+        name: "Direction",
+        type: "select",
+        defaultValue: "x",
+        options: [
+          { value: "x", label: "X direction" },
+          { value: "y", label: "Y direction" },
+          { value: "both", label: "Both directions" }
+        ],
+        description: "Direction for edge detection"
+      }
+    ]
   },
   {
-    id: "Laplacian filter",
-    name: "laplacian edge detector",
-    description: "Apply laplacin edge detection to an image",
+    id: "laplacian-filter",
+    name: "Laplacian Edge Detector",
+    description: "Apply Laplacian edge detection to an image",
     endpoint: "/api/task/laplacian-filter",
     category: "filters",
+    parameters: [
+      {
+        id: "ksize",
+        name: "Kernel Size",
+        type: "number",
+        defaultValue: 3,
+        min: 1,
+        max: 31,
+        step: 2,
+        description: "Size of the Laplacian kernel"
+      },
+      {
+        id: "scale",
+        name: "Scale",
+        type: "number",
+        defaultValue: 1,
+        min: 0.1,
+        max: 10,
+        step: 0.1,
+        description: "Scale factor for the computed Laplacian values"
+      }
+    ]
   },
   {
     id: "denoise",
@@ -83,6 +172,18 @@ export const processingTasks: ProcessingTask[] = [
     description: "Remove noise from an image",
     endpoint: "/api/task/denoise",
     category: "enhancement",
+    parameters: [
+      {
+        id: "strength",
+        name: "Strength",
+        type: "number",
+        defaultValue: 10,
+        min: 1,
+        max: 30,
+        step: 1,
+        description: "Strength of denoising"
+      }
+    ]
   },
   {
     id: "xor",

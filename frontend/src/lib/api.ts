@@ -1,3 +1,4 @@
+
 /**
  * API service for image processing tasks
  */
@@ -9,11 +10,13 @@ const API_BASE_URL = "http://localhost:8000"; // Use relative path for easier de
  * Send an image to the backend for processing
  * @param endpoint - API endpoint to send the request to
  * @param imageFile - The image file (or files) to process
+ * @param params - Additional parameters for the processing task
  * @returns Response from the server
  */
 export const processImage = async (
   endpoint: string,
-  imageFile: File | File[]
+  imageFile: File | File[],
+  params?: Record<string, string | number>
 ): Promise<Response> => {
   const formData = new FormData();
 
@@ -26,6 +29,13 @@ export const processImage = async (
   } else {
     // Single file
     formData.append("file", imageFile);
+  }
+  
+  // Add any additional parameters
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      formData.append(key, value.toString());
+    });
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
