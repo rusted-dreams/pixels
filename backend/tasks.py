@@ -409,3 +409,21 @@ def get_median_filter(image_bytes: bytes,
 
     median = cv2.medianBlur(gray, kernel_size)
     return encode_image(median)
+
+def decode_and_apply_power_law(image_bytes: bytes, gamma: float = 1.0):
+    # Decode image from bytes
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Normalize the image to range [0, 1]
+    img_normalized = img / 255.0
+
+    # Apply power law transformation
+    img_gamma_corrected = np.power(img_normalized, gamma)
+
+    # Scale back to range [0, 255]
+    img_result = np.uint8(img_gamma_corrected * 255)
+
+    return img_result
