@@ -242,34 +242,6 @@ export const processingTasks: ProcessingTask[] = [
       },
     ],
   },
-
-  {
-    id: "denoise",
-    name: "Noise Removal",
-    description: "Remove noise from an image",
-    endpoint: "/api/task/denoise",
-    category: "enhancement",
-    parameters: [
-      {
-        id: "strength",
-        name: "Strength",
-        type: "number",
-        defaultValue: 10,
-        min: 1,
-        max: 30,
-        step: 1,
-        description: "Strength of denoising",
-      },
-    ],
-  },
-  {
-    id: "xor",
-    name: "XOR Operation",
-    description: "Apply XOR operation between two images",
-    endpoint: "/api/task/xor",
-    category: "operations",
-    requiresMultipleImages: true,
-  },
 ];
 
 /**
