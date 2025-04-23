@@ -1,19 +1,19 @@
 - [x] logarithmic transformation
-- [ ] negative transformation
+- [x] negative transformation
 - [ ] power law transformation
 - [ ] scaling
 - [ ] rotation
 - [ ] translation
 - [ ] shear
-- [ ] max filter
-- [ ] min filter
-- [ ] midpoint filter
-- [ ]  add gaussian noise raylegh noise
-- [ ]  laplacian of gaussian
-- [ ]  high pass filter
-- [ ]  low pass filter
-- [ ]  high boost filtering with boost factors(2, 3, 7...) to enhance details
-- [ ]  canny edge detector
+- [x] max filter
+- [x] min filter
+- [x] midpoint filter
+- [ ] add gaussian noise raylegh noise
+- [ ] laplacian of gaussian
+- [ ] high pass filter
+- [ ] low pass filter
+- [ ] high boost filtering with boost factors(2, 3, 7...) to enhance details
+- [ ] canny edge detector
 - [ ] harris corner detection
 - [ ] hough circle circle transform
 - [ ] hough line transform
