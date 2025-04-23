@@ -160,7 +160,7 @@ async def resize(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
     
 @app.post("/api/task/shear-image-horizontal")
-async def horizontal_shear(file: UploadFile = File(...), shear_x: float = Form(0.0)):
+async def horizontal_shear(file: UploadFile = File(...), shear_x: float = Form(1.0)):
     try:
         contents = await file.read()
         output = tasks.get_horizontal_sheared_image(contents, shear_x)
@@ -169,7 +169,7 @@ async def horizontal_shear(file: UploadFile = File(...), shear_x: float = Form(0
         raise HTTPException(status_code=500, detail=f"Horizontal shearing failed: {str(e)}")
 
 @app.post("/api/task/shear-image-vertical")
-async def vertical_shear(file: UploadFile = File(...), shear_y: float = Form(0.0)):
+async def vertical_shear(file: UploadFile = File(...), shear_y: float = Form(1.0)):
     try:
         contents = await file.read()
         output = tasks.get_vertical_sheared_image(contents, shear_y)
