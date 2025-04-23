@@ -1,4 +1,3 @@
-
 import { ProcessingTask } from "@/lib/types";
 
 /**
@@ -28,10 +27,33 @@ export const processingTasks: ProcessingTask[] = [
     category: "basic",
   },
   {
+    id: "binary",
+    name: "Binary",
+    description: "Convert an image to binary",
+    endpoint: "/api/task/binary",
+    category: "basic",
+  },
+
+  {
+    id: "shear-vertical",
+    name: "shear image vertical",
+    description: "shear image vertical",
+    endpoint: "/api/task/shear-image-vertical",
+    category: "basic",
+  },
+
+  {
+    id: "shear-horizontal",
+    name: "shear image horizontal",
+    description: "shear image horizontal",
+    endpoint: "/api/task/shear-image-horizontal",
+    category: "basic",
+  },
+  {
     id: "blur",
     name: "Blur",
     description: "Apply a Gaussian blur to an image",
-    endpoint: "/api/task/blur",
+    endpoint: "/api/task/gaussian-blur",
     category: "enhancement",
   },
   {
@@ -49,6 +71,13 @@ export const processingTasks: ProcessingTask[] = [
     category: "filters",
   },
   {
+    id: "Laplacian filter",
+    name: "laplacian edge detector",
+    description: "Apply laplacin edge detection to an image",
+    endpoint: "/api/task/laplacian-filter",
+    category: "filters",
+  },
+  {
     id: "denoise",
     name: "Noise Removal",
     description: "Remove noise from an image",
@@ -62,7 +91,7 @@ export const processingTasks: ProcessingTask[] = [
     endpoint: "/api/task/xor",
     category: "operations",
     requiresMultipleImages: true,
-  }
+  },
 ];
 
 /**
@@ -70,14 +99,14 @@ export const processingTasks: ProcessingTask[] = [
  */
 export const getTasksByCategory = () => {
   const categorized: Record<string, ProcessingTask[]> = {};
-  
-  processingTasks.forEach(task => {
+
+  processingTasks.forEach((task) => {
     if (!categorized[task.category]) {
       categorized[task.category] = [];
     }
     categorized[task.category].push(task);
   });
-  
+
   return categorized;
 };
 
@@ -85,5 +114,5 @@ export const getTasksByCategory = () => {
  * Get a task by its ID
  */
 export const getTaskById = (id: string): ProcessingTask | undefined => {
-  return processingTasks.find(task => task.id === id);
+  return processingTasks.find((task) => task.id === id);
 };

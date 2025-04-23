@@ -4,6 +4,47 @@ from io import BytesIO
 import zipfile
 
 
+def decode_image(image_bytes: bytes):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+    return img
+
+def encode_image(img) -> BytesIO:
+    success, encoded = cv2.imencode(".png", img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded.tobytes())
+
+def get_gaussian(image_bytes: bytes, ksize: int, sigmaX: float) -> BytesIO:
+    img = decode_image(image_bytes)
+    blurred = cv2.GaussianBlur(img, (ksize, ksize), sigmaX)
+    return encode_image(blurred)
+
+def get_sobel(image_bytes: bytes, dx: int, dy: int, ksize: int) -> BytesIO:
+    img = decode_image(image_bytes)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    sobel = cv2.Sobel(gray, cv2.CV_64F, dx, dy, ksize=ksize)
+    sobel = cv2.convertScaleAbs(sobel)
+    return encode_image(sobel)
+
+def get_prewitt(image_bytes: bytes, axis: str) -> BytesIO:
+    img = decode_image(image_bytes)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    kernelx = np.array([[1, 0, -1], [1, 0, -1], [1, 0, -1]])
+    kernely = np.array([[1, 1, 1], [0, 0, 0], [-1, -1, -1]])
+
+    if axis == "x":
+        prewitt = cv2.filter2D(gray, -1, kernelx)
+    elif axis == "y":
+        prewitt = cv2.filter2D(gray, -1, kernely)
+    else:
+        raise ValueError("Invalid axis. Use 'x' or 'y'.")
+
+    return encode_image(prewitt)
+
 def get_negative(image_bytes: bytes) -> BytesIO:
     # Convert bytes to NumPy array
     nparr = np.frombuffer(image_bytes, np.uint8)
@@ -284,3 +325,31 @@ def get_rgb_channels(image_bytes: bytes) -> BytesIO:
 
     zip_buffer.seek(0)
     return zip_buffer
+
+
+# laplacian filter:
+def get_laplacian(image_bytes: bytes) -> BytesIO:
+    import cv2
+    import numpy as np
+    from io import BytesIO
+
+    # Convert bytes to a NumPy array
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Apply Laplacian filter
+    laplacian = cv2.Laplacian(gray, ddepth=cv2.CV_64F)
+    
+    # Convert the result to 8-bit absolute value
+    laplacian = cv2.convertScaleAbs(laplacian)
+    
+    # Encode the Laplacian image to PNG format in memory
+    success, encoded_image = cv2.imencode(".png", laplacian)
+    if not success:
+        raise Exception("Failed to encode image")
+    
+    # Wrap the encoded image in BytesIO to return as response
+    return BytesIO(encoded_image.tobytes())

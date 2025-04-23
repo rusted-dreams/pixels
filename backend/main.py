@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from img_upload_utils import upload_image_to_azure
@@ -170,7 +170,7 @@ async def resize(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
 
 @app.post("/api/task/shear-image-vertical")
-async def resize(file: UploadFile = File(...)):
+async def shear_vertical(file: UploadFile = File(...)):
     try:
         contents = await file.read()
         resize = tasks.shear_image_vertical(contents)
@@ -178,4 +178,40 @@ async def resize(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
+
+@app.post("/api/task/laplacian-filter")
+async def laplacian_filter(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        resize = tasks.get_laplacian(contents)
+        return StreamingResponse(resize, media_type="image/png")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"process failed: {str(e)}")
     
+@app.post("/api/task/gaussian")
+async def gaussian_blur(file: UploadFile = File(...), ksize: int = Form(5), sigmaX: float = Form(0.0)):
+    try:
+        contents = await file.read()
+        output = tasks.get_gaussian(contents, ksize, sigmaX)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gaussian blur failed: {str(e)}")
+
+@app.post("/api/task/sobel")
+async def sobel_filter(file: UploadFile = File(...), dx: int = Form(1), dy: int = Form(0), ksize: int = Form(3)):
+    try:
+        contents = await file.read()
+        output = tasks.get_sobel(contents, dx, dy, ksize)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sobel filter failed: {str(e)}")
+
+@app.post("/api/task/prewitt")
+async def prewitt_filter(file: UploadFile = File(...), axis: str = Form("x")):
+    try:
+        contents = await file.read()
+        output = tasks.get_prewitt(contents, axis)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prewitt filter failed: {str(e)}")

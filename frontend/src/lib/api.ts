@@ -1,10 +1,9 @@
-
 /**
  * API service for image processing tasks
  */
 
 // API base URL - will need to be updated with actual FastAPI backend URL
-const API_BASE_URL = "/api";  // Use relative path for easier deployment
+const API_BASE_URL = "http://localhost:8000"; // Use relative path for easier deployment
 
 /**
  * Send an image to the backend for processing
@@ -17,12 +16,12 @@ export const processImage = async (
   imageFile: File | File[]
 ): Promise<Response> => {
   const formData = new FormData();
-  
+
   // Handle both single and multiple files
   if (Array.isArray(imageFile)) {
     // Multiple files
     imageFile.forEach((file, index) => {
-      formData.append(`file${index+1}`, file);
+      formData.append(`file${index + 1}`, file);
     });
   } else {
     // Single file
@@ -37,9 +36,7 @@ export const processImage = async (
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(
-      `Processing failed: ${
-        errorData.detail || `Status ${response.status}`
-      }`
+      `Processing failed: ${errorData.detail || `Status ${response.status}`}`
     );
   }
 
@@ -59,10 +56,9 @@ export const handleProcessedResponse = async (
   filename: string;
 }> => {
   const contentType = response.headers.get("Content-Type") || "";
-  const contentDisposition =
-    response.headers.get("Content-Disposition") || "";
+  const contentDisposition = response.headers.get("Content-Disposition") || "";
   let filename = "processed-result";
-  
+
   // Try to extract filename from Content-Disposition header
   const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
   if (filenameMatch && filenameMatch[1]) {
