@@ -1,26 +1,27 @@
 - [x] logarithmic transformation
-- [ ] negative transformation
-- [ ] power law transformation
-- [ ] scaling
-- [ ] rotation
-- [ ] translation
-- [ ] shear
-- [ ] max filter
-- [ ] min filter
-- [ ] midpoint filter
-- [ ]  add gaussian noise raylegh noise
-- [ ]  laplacian of gaussian
-- [ ]  high pass filter
-- [ ]  low pass filter
-- [ ]  high boost filtering with boost factors(2, 3, 7...) to enhance details
-- [ ]  canny edge detector
-- [ ] harris corner detection
-- [ ] hough circle circle transform
-- [ ] hough line transform
-- [ ] dilation operation
-- [ ] erosion operation
-- [ ] opening operation
-- [ ] closing operation
-- [ ] hit miss transform
+- [x] negative transformation
+- [x] power law transformation
+- [x] scaling
+- [x] rotation
+- [x] translation
+- [x] shear
+- [x] max filter
+- [x] min filter
+- [x] midpoint filter
+- [x] median filter
+- [x]  add gaussian noise raylegh noise
+- [x]  laplacian of gaussian
+- [x]  high pass filter
+- [x]  low pass filter
+- [x]  high boost filtering with boost factors(2, 3, 7...) to enhance details
+- [x]  canny edge detector
+- [x] harris corner detection
+- [x] hough circle circle transform
+- [x] hough line transform
+- [x] dilation operation
+- [x] erosion operation
+- [x] opening operation
+- [x] closing operation
+- [x] hit miss transform
 - [ ] 
 - [ ] 

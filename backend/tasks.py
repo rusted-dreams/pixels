@@ -274,30 +274,6 @@ def rotate_image(image_bytes: bytes, angle: float = 0.0, scale: float = 1.0) -> 
         raise Exception("Failed to encode image")
     return BytesIO(encoded_image.tobytes())
 
-def shear_image_horizontal(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    (h, w) = img.shape[:2]
-    shear_matrix = np.float32([[1, 0, 0], [shear_factor, 1, 0]])
-    new_height = int(h + abs(shear_factor) * w)
-    sheared_img = cv2.warpAffine(img, shear_matrix, (w, new_height))
-    success, encoded_image = cv2.imencode(".png", sheared_img)
-    if not success:
-        raise Exception("Failed to encode image")
-    return BytesIO(encoded_image.tobytes())
-
-def shear_image_vertical(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
-    nparr = np.frombuffer(image_bytes, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    (h, w) = img.shape[:2]
-    shear_matrix = np.float32([[1, shear_factor, 0], [0, 1, 0]])
-    new_width = int(w + abs(shear_factor) * h)
-    sheared_img = cv2.warpAffine(img, shear_matrix, (new_width, h))
-    success, encoded_image = cv2.imencode(".png", sheared_img)
-    if not success:
-        raise Exception("Failed to encode image")
-    return BytesIO(encoded_image.tobytes())
-
 
 def get_rgb_channels(image_bytes: bytes) -> BytesIO:
     # Decode the input image
@@ -409,3 +385,315 @@ def get_median_filter(image_bytes: bytes,
 
     median = cv2.medianBlur(gray, kernel_size)
     return encode_image(median)
+
+def decode_and_apply_power_law(image_bytes: bytes, gamma: float = 1.0):
+    # Decode image from bytes
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Normalize the image to range [0, 1]
+    img_normalized = img / 255.0
+
+    # Apply power law transformation
+    img_gamma_corrected = np.power(img_normalized, gamma)
+
+    # Scale back to range [0, 255]
+    img_result = np.uint8(img_gamma_corrected * 255)
+
+    return img_result
+
+def get_scaled_image(image_bytes: bytes, fx: float, fy: float):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    img_scaled = cv2.resize(img, None, fx=fx, fy=fy, interpolation=cv2.INTER_LINEAR)
+
+    _, buffer = cv2.imencode('.png', img_scaled)
+    return BytesIO(buffer.tobytes())
+
+def get_rotated_image(image_bytes: bytes, angle: float):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    (h, w) = img.shape[:2]
+    center = (w // 2, h // 2)
+
+    matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    rotated = cv2.warpAffine(img, matrix, (w, h))
+
+    _, buffer = cv2.imencode('.png', rotated)
+    return BytesIO(buffer.tobytes())
+
+def get_translated_image(image_bytes: bytes, tx: int, ty: int):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    rows, cols = img.shape[:2]
+    matrix = np.float32([[1, 0, tx], [0, 1, ty]])
+    translated = cv2.warpAffine(img, matrix, (cols, rows))
+
+    _, buffer = cv2.imencode('.png', translated)
+    return BytesIO(buffer.tobytes())
+
+def get_horizontal_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    (h, w) = img.shape[:2]
+    shear_matrix = np.float32([[1, 0, 0], [shear_factor, 1, 0]])
+    new_height = int(h + abs(shear_factor) * w)
+    sheared_img = cv2.warpAffine(img, shear_matrix, (w, new_height))
+    success, encoded_image = cv2.imencode(".png", sheared_img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded_image.tobytes())
+
+
+def get_vertical_sheared_image(image_bytes: bytes, shear_factor: float = 0.5) -> BytesIO:
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    (h, w) = img.shape[:2]
+    shear_matrix = np.float32([[1, shear_factor, 0], [0, 1, 0]])
+    new_width = int(w + abs(shear_factor) * h)
+    sheared_img = cv2.warpAffine(img, shear_matrix, (new_width, h))
+    success, encoded_image = cv2.imencode(".png", sheared_img)
+    if not success:
+        raise Exception("Failed to encode image")
+    return BytesIO(encoded_image.tobytes())
+
+def add_gaussian_noise(image_bytes: bytes, mean: float = 0.0, std: float = 1.0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Generate Gaussian noise
+    noise = np.random.normal(mean, std, img.shape).astype(np.uint8)
+    noisy_img = cv2.add(img, noise)
+
+    _, buffer = cv2.imencode('.png', noisy_img)
+    return BytesIO(buffer.tobytes())
+
+# Rayleigh Noise
+def add_rayleigh_noise(image_bytes: bytes, scale: float = 1.0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Generate Rayleigh noise
+    noise = np.random.rayleigh(scale, img.shape).astype(np.uint8)
+    noisy_img = cv2.add(img, noise)
+
+    _, buffer = cv2.imencode('.png', noisy_img)
+    return BytesIO(buffer.tobytes())
+
+def laplacian_of_gaussian(image_bytes: bytes, kernel_size: int = 5, sigma: float = 1.0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply Gaussian blur and then Laplacian filter
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), sigma)
+    laplacian = cv2.Laplacian(blurred, cv2.CV_64F)
+
+    # Convert to uint8 (8-bit) image
+    laplacian = cv2.convertScaleAbs(laplacian)
+
+    _, buffer = cv2.imencode('.png', laplacian)
+    return BytesIO(buffer.tobytes())
+
+def high_pass_filter(image_bytes: bytes, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply a Gaussian blur (low pass) to get the smoothed image
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+    
+    # High pass filter is the original image minus the blurred (low-pass) image
+    high_pass = cv2.subtract(img, blurred)
+
+    _, buffer = cv2.imencode('.png', high_pass)
+    return BytesIO(buffer.tobytes())
+
+def low_pass_filter(image_bytes: bytes, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply Gaussian blur (Low pass filter)
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+
+    _, buffer = cv2.imencode('.png', blurred)
+    return BytesIO(buffer.tobytes())
+
+def high_boost_filter(image_bytes: bytes, boost_factor: float = 2.0, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    # Apply a Gaussian blur (low pass filter) to get the smoothed image
+    blurred = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+    
+    # High pass filter is the original image minus the blurred (low-pass) image
+    high_pass = cv2.subtract(img, blurred)
+    
+    # High Boost Filter: add the boost factor multiplied high-pass component to the original image
+    boosted_image = cv2.addWeighted(img, 1 + boost_factor, high_pass, -boost_factor, 0)
+
+    # Ensure the image is valid by clipping pixel values to stay within valid range [0, 255]
+    boosted_image = np.clip(boosted_image, 0, 255).astype(np.uint8)
+
+    _, buffer = cv2.imencode('.png', boosted_image)
+    return BytesIO(buffer.tobytes())
+
+def canny_edge_detection(image_bytes: bytes, threshold1: int = 100, threshold2: int = 200):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    edges = cv2.Canny(img, threshold1, threshold2)
+
+    _, buffer = cv2.imencode('.png', edges)
+    return BytesIO(buffer.tobytes())
+
+def harris_corner_detection(image_bytes: bytes, block_size: int = 2, ksize: int = 3, k: float = 0.04, threshold: float = 0.01):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = np.float32(gray)
+
+    dst = cv2.cornerHarris(gray, block_size, ksize, k)
+    dst = cv2.dilate(dst, None)
+
+    img[dst > threshold * dst.max()] = [0, 0, 255]
+
+    _, buffer = cv2.imencode('.png', img)
+    return BytesIO(buffer.tobytes())
+
+def hough_circle_transform(image_bytes: bytes, dp: float = 1.2, min_dist: int = 100, param1: int = 100, param2: int = 30, min_radius: int = 0, max_radius: int = 0):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.medianBlur(gray, 5)
+
+    circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, dp, minDist=min_dist,
+                               param1=param1, param2=param2,
+                               minRadius=min_radius, maxRadius=max_radius)
+
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            cv2.circle(img, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
+
+    _, buffer = cv2.imencode('.png', img)
+    return BytesIO(buffer.tobytes())
+
+def hough_line_transform(image_bytes: bytes, rho: float = 1, theta: float = np.pi / 180, threshold: int = 100):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    edges = cv2.Canny(gray, 50, 150)
+
+    lines = cv2.HoughLines(edges, rho, theta, threshold)
+    if lines is not None:
+        for rho, theta in lines[:, 0]:
+            a = np.cos(theta)
+            b = np.sin(theta)
+            x0 = a * rho
+            y0 = b * rho
+            x1 = int(x0 + 1000 * (-b))
+            y1 = int(y0 + 1000 * (a))
+            x2 = int(x0 - 1000 * (-b))
+            y2 = int(y0 - 1000 * (a))
+            cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+    _, buffer = cv2.imencode('.png', img)
+    return BytesIO(buffer.tobytes())
+
+def dilation_operation(image_bytes: bytes, kernel_size: int = 5, iterations: int = 1):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    dilated = cv2.dilate(img, kernel, iterations=iterations)
+
+    _, buffer = cv2.imencode('.png', dilated)
+    return BytesIO(buffer.tobytes())
+
+def erosion_operation(image_bytes: bytes, kernel_size: int = 5, iterations: int = 1):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    eroded = cv2.erode(img, kernel, iterations=iterations)
+
+    _, buffer = cv2.imencode('.png', eroded)
+    return BytesIO(buffer.tobytes())
+
+def opening_operation(image_bytes: bytes, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    opened = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+
+    _, buffer = cv2.imencode('.png', opened)
+    return BytesIO(buffer.tobytes())
+
+def closing_operation(image_bytes: bytes, kernel_size: int = 5):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    closed = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+
+    _, buffer = cv2.imencode('.png', closed)
+    return BytesIO(buffer.tobytes())
+
+def hit_miss_transform(image_bytes: bytes):
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        raise Exception("Invalid image data")
+
+    _, binary = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    kernel1 = np.array([[0, 1, 0],
+                        [1, -1, 1],
+                        [0, 1, 0]], dtype=np.int8)
+
+    hitmiss = cv2.morphologyEx(binary, cv2.MORPH_HITMISS, kernel1)
+
+    _, buffer = cv2.imencode('.png', hitmiss)
+    return BytesIO(buffer.tobytes())

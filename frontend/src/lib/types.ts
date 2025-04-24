@@ -1,4 +1,3 @@
-
 /**
  * Types for the image processing app
  */
@@ -24,7 +23,7 @@ export interface TaskParameter {
   min?: number; // For number type
   max?: number; // For number type
   step?: number; // For number type
-  options?: Array<{value: string; label: string}>; // For select type
+  options?: Array<{ value: string; label: string }>; // For select type
   description?: string;
 }
 
@@ -32,14 +31,14 @@ export interface TaskParameter {
 export type TaskCategory =
   | "basic"
   | "filters"
-  | "enhancement"
+  | "enhancements"
   | "channels"
   | "operations";
 
 // Result of a processing task
 export type ProcessingResult = {
   originalImage: string;
-  processedImages: 
-    | { type: "single"; url: string } 
+  processedImages:
+    | { type: "single"; url: string }
     | { type: "multiple"; images: Array<{ name: string; url: string }> };
 };
