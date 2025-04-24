@@ -1,10 +1,10 @@
-
 /**
  * API service for image processing tasks
  */
 
 // API base URL - will need to be updated with actual FastAPI backend URL
-const API_BASE_URL = "http://localhost:8000"; // Use relative path for easier deployment
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:9000"; // Use relative path for easier deployment
 
 /**
  * Send an image to the backend for processing
@@ -30,7 +30,7 @@ export const processImage = async (
     // Single file
     formData.append("file", imageFile);
   }
-  
+
   // Add any additional parameters
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
