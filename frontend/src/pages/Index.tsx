@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
@@ -8,7 +7,7 @@ const Index = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="py-20 md:py-32 bg-gradient-to-b from-background to-muted/30">
@@ -20,9 +19,9 @@ const Index = () => {
                     Learn Image Processing Visually
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    PixelLab is an educational platform for students and educators to
-                    explore image processing concepts through interactive
-                    visualization.
+                    PixelLab is an educational platform for students and
+                    educators to explore image processing concepts through
+                    interactive visualization.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -73,7 +72,8 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl font-bold">Upload</h3>
                     <p className="text-center text-muted-foreground">
-                      Simply upload an image from your local machine to get started
+                      Simply upload an image from your local machine to get
+                      started
                     </p>
                   </div>
                 </CardContent>
@@ -152,8 +152,8 @@ const Index = () => {
                   Ready to Start Learning?
                 </h2>
                 <p className="max-w-[600px] md:text-xl/relaxed">
-                  Jump into our interactive lab and begin experimenting with image
-                  processing techniques.
+                  Jump into our interactive lab and begin experimenting with
+                  image processing techniques.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -205,3 +205,4 @@ const transformationPreviews = [
 ];
 
 export default Index;
+//ljdjfl
