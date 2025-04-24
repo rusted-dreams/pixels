@@ -125,7 +125,9 @@ const Index = () => {
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
               {transformationPreviews.map((transform) => (
                 <Card key={transform.name} className="overflow-hidden">
-                  <div className="aspect-square bg-muted/50"></div>
+                  <div className="aspect-square bg-muted/50">
+                    {/* <img src="../../public/negative.jpg" /> */}
+                  </div>
                   <CardContent className="p-4">
                     <h3 className="font-semibold">{transform.name}</h3>
                     <p className="text-sm text-muted-foreground">

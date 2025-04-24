@@ -12,6 +12,13 @@ export const processingTasks: ProcessingTask[] = [
     category: "basic",
   },
   {
+    id: "segment",
+    name: "segment",
+    description: "get image segmentation",
+    endpoint: "/api/task/segment",
+    category: "operations",
+  },
+  {
     id: "rgb-channels",
     name: "RGB Channels",
     description: "Separate the red, green, and blue channels of an image",
