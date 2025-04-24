@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from img_upload_utils import upload_image_to_azure
 import tasks
 import numpy as np
+from segment import segment_image
 
 app = FastAPI()
 
@@ -442,3 +443,12 @@ async def hitmiss(file: UploadFile = File(...)):
         return StreamingResponse(output, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Hit-or-Miss failed: {str(e)}")
+
+@app.post("/api/task/segment")
+async def segment(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        output = segment_image(contents)
+        return StreamingResponse(output, media_type="image/png")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Segmentation failed: {str(e)}")
