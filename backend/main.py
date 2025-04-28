@@ -9,7 +9,8 @@ from segment import segment_image
 app = FastAPI()
 
 origins = [
-    "0.0.0.0"
+    "0.0.0.0",
+    "https://pixels-jet.vercel.app",
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
     "http://localhost",
