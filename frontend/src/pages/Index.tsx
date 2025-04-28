@@ -36,7 +36,7 @@ const Index = () => {
               <div className="flex items-center justify-center">
                 <img
                   className="rounded-md bg-primary/40 h-full w-full shadow-2xl"
-                  src="../../public/ai-generated-8860534_1280.jpg"
+                  src="/ai-generated-8860534_1280.jpg"
                   alt=""
                 />
               </div>
@@ -178,32 +178,32 @@ const Index = () => {
 const transformationPreviews = [
   {
     name: "Image Negative",
-    image: "../../public/negative.jpg",
+    image: "/negative.jpg",
     description: "Invert all pixel values in an image",
   },
   {
     name: "RGB Channels",
-    image: "../../public/rgbt.jpg",
+    image: "/rgbt.jpg",
     description: "Separate the red, green, and blue channels",
   },
   {
     name: "Grayscale",
-    image: "../../public/gryscale.jpeg",
+    image: "/gryscale.jpeg",
     description: "Convert color images to black and white",
   },
   {
     name: "Gaussian Blur",
-    image: "../../public/Effects-GaussianBlur.png",
+    image: "/Effects-GaussianBlur.png",
     description: "Reduce noise and detail in images",
   },
   {
     name: "Sobel Edge Detection",
-    image: "../../public/sobel_1.jpg",
+    image: "/sobel_1.jpg",
     description: "Highlight edges in an image",
   },
   {
     name: "Noise Removal",
-    image: "../../public/noise_removal.png",
+    image: "/noise_removal.png",
     description: "Clean up images with various noise types",
   },
 ];
