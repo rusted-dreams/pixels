@@ -34,16 +34,11 @@ const Index = () => {
                 </div>
               </div>
               <div className="flex items-center justify-center">
-                <div className="relative h-[350px] w-full md:h-[450px] lg:h-[450px] lg:w-[450px] xl:h-[550px] xl:w-[550px] rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 shadow-lg">
-                  <div className="absolute inset-0 flex items-center justify-center p-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-md bg-primary/20 h-full w-full"></div>
-                      <div className="rounded-md bg-primary/40 h-full w-full"></div>
-                      <div className="rounded-md bg-primary/30 h-full w-full"></div>
-                      <div className="rounded-md bg-primary/50 h-full w-full"></div>
-                    </div>
-                  </div>
-                </div>
+                <img
+                  className="rounded-md bg-primary/40 h-full w-full shadow-2xl"
+                  src="../../public/ai-generated-8860534_1280.jpg"
+                  alt=""
+                />
               </div>
             </div>
           </div>
@@ -125,9 +120,10 @@ const Index = () => {
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
               {transformationPreviews.map((transform) => (
                 <Card key={transform.name} className="overflow-hidden">
-                  <div className="aspect-square bg-muted/50">
-                    {/* <img src="../../public/negative.jpg" /> */}
-                  </div>
+                  <img
+                    className="aspect-square bg-muted/50"
+                    src={transform.image}
+                  />
                   <CardContent className="p-4">
                     <h3 className="font-semibold">{transform.name}</h3>
                     <p className="text-sm text-muted-foreground">
@@ -182,29 +178,34 @@ const Index = () => {
 const transformationPreviews = [
   {
     name: "Image Negative",
+    image: "../../public/negative.jpg",
     description: "Invert all pixel values in an image",
   },
   {
     name: "RGB Channels",
+    image: "../../public/rgbt.jpg",
     description: "Separate the red, green, and blue channels",
   },
   {
     name: "Grayscale",
+    image: "../../public/gryscale.jpeg",
     description: "Convert color images to black and white",
   },
   {
     name: "Gaussian Blur",
+    image: "../../public/Effects-GaussianBlur.png",
     description: "Reduce noise and detail in images",
   },
   {
     name: "Sobel Edge Detection",
+    image: "../../public/sobel_1.jpg",
     description: "Highlight edges in an image",
   },
   {
     name: "Noise Removal",
+    image: "../../public/noise_removal.png",
     description: "Clean up images with various noise types",
   },
 ];
 
 export default Index;
-//ljdjfl
