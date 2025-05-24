@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from img_upload_utils import upload_image_to_azure
 import tasks
 import numpy as np
-from segment import segment_image
+# from segment import segment_image
 
 app = FastAPI()
 
