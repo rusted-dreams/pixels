@@ -444,11 +444,11 @@ async def hitmiss(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Hit-or-Miss failed: {str(e)}")
 
-@app.post("/api/task/segment")
-async def segment(file: UploadFile = File(...)):
-    try:
-        contents = await file.read()
-        output = segment_image(contents)
-        return StreamingResponse(output, media_type="image/png")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Segmentation failed: {str(e)}")
+# @app.post("/api/task/segment")
+# async def segment(file: UploadFile = File(...)):
+#     try:
+#         contents = await file.read()
+#         output = segment_image(contents)
+#         return StreamingResponse(output, media_type="image/png")
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Segmentation failed: {str(e)}")
