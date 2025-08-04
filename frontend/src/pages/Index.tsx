@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { UploadIcon, CpuIcon, GitCompareIcon } from "lucide-react";
 
 const Index = () => {
   return (
@@ -12,16 +13,16 @@ const Index = () => {
         {/* Hero Section */}
         <section className="py-20 md:py-32 bg-gradient-to-b from-background to-muted/30">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
+            <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_650px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                    Learn Image Processing Visually
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none">
+                    The Universe of Pixels,
+                    <br />
+                    <span className="text-primary">At Your Fingertips.</span>
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    PixelLab is an educational platform for students and
-                    educators to explore image processing concepts through
-                    interactive visualization.
+                    An educational platform for students and educators to explore image processing concepts through interactive visualization.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -35,9 +36,9 @@ const Index = () => {
               </div>
               <div className="flex items-center justify-center">
                 <img
-                  className="rounded-md bg-primary/40 h-full w-full shadow-2xl"
+                  className="rounded-xl bg-primary/40 h-full w-full shadow-2xl"
                   src="/ai-generated-8860534_1280.jpg"
-                  alt=""
+                  alt="Hero Image"
                 />
               </div>
             </div>
@@ -50,51 +51,49 @@ const Index = () => {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Understand Image Processing Intuitively
+                  A New Way to Learn
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Our platform makes complex concepts accessible through visual
-                  learning and interactive experiments.
+                  Our platform is designed to make learning image processing intuitive, engaging, and fun.
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-3">
-              <Card>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 py-12 md:grid-cols-3">
+              <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
-                      <span className="text-2xl font-bold">1</span>
+                    <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <UploadIcon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold">Upload</h3>
+                    <h3 className="text-xl font-bold">Upload with Ease</h3>
                     <p className="text-center text-muted-foreground">
-                      Simply upload an image from your local machine to get
-                      started
+                      Drag and drop your images to start the magic.
                     </p>
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
-                      <span className="text-2xl font-bold">2</span>
+                    <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <CpuIcon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold">Process</h3>
+                    <h3 className="text-xl font-bold">Process in Real-Time</h3>
                     <p className="text-center text-muted-foreground">
-                      Apply various OpenCV transformations with a single click
+                      Apply a wide range of transformations and see the results instantly.
                     </p>
                   </div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
-                      <span className="text-2xl font-bold">3</span>
+                    <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <GitCompareIcon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="text-xl font-bold">Compare</h3>
+                    <h3 className="text-xl font-bold">Compare and Contrast</h3>
                     <p className="text-center text-muted-foreground">
-                      Analyze side-by-side results to understand transformations
+                      Analyze the before and after to deepen your understanding.
                     </p>
                   </div>
                 </CardContent>
@@ -109,23 +108,25 @@ const Index = () => {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Explore Image Transformations
+                  A World of Transformations
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  From basic filters to advanced edge detection algorithms, our
-                  platform covers a wide range of operations.
+                  Our platform supports a wide variety of image processing operations, from simple filters to complex algorithms.
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 py-12 md:grid-cols-2 lg:grid-cols-3">
               {transformationPreviews.map((transform) => (
-                <Card key={transform.name} className="overflow-hidden">
-                  <img
-                    className="aspect-square bg-muted/50"
-                    src={transform.image}
-                  />
+                <Card key={transform.name} className="overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+                  <div className="overflow-hidden">
+                    <img
+                      className="aspect-video w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      src={transform.image}
+                      alt={transform.name}
+                    />
+                  </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold">{transform.name}</h3>
+                    <h3 className="font-semibold text-lg">{transform.name}</h3>
                     <p className="text-sm text-muted-foreground">
                       {transform.description}
                     </p>
@@ -142,19 +143,18 @@ const Index = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-primary">
-          <div className="container px-4 md:px-6 text-primary-foreground">
+        <section className="py-20 bg-primary text-primary-foreground">
+          <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Ready to Start Learning?
+                  Unlock Your Potential
                 </h2>
                 <p className="max-w-[600px] md:text-xl/relaxed">
-                  Jump into our interactive lab and begin experimenting with
-                  image processing techniques.
+                  Ready to dive in? The lab is where the magic happens.
                 </p>
               </div>
-              <div className="flex flex-col gap-2 min-[400px]:flex-row">
+              <div className="flex flex-col gap-2 min-[400px]:flex-row mt-4">
                 <Button
                   size="lg"
                   variant="secondary"
