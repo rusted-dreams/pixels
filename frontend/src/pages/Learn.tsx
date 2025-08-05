@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +7,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ProcessingTask } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import ImageUploader from "@/components/ImageUploader";
+import { Button } from "@/components/ui/button";
+import { processImage, handleProcessedResponse } from "@/lib/api";
+import { toast } from "sonner";
 
 interface TaskExplanation {
   [key: string]: {
@@ -15,6 +19,10 @@ interface TaskExplanation {
     applications: string[];
     furtherReading: string;
     creativityCorner: string;
+    visual?: {
+      before: string;
+      after: string;
+    };
   };
 }
 
@@ -28,7 +36,11 @@ const explanations: TaskExplanation = {
       "Artistic effects and image enhancement"
     ],
     furtherReading: "Digital Image Processing by Gonzalez & Woods, Chapter 3.2",
-    creativityCorner: "Try using image negatives on portraits to create a ghostly, ethereal effect. Or, use it on landscapes to turn a day scene into a surreal night scene."
+    creativityCorner: "Try using image negatives on portraits to create a ghostly, ethereal effect. Or, use it on landscapes to turn a day scene into a surreal night scene.",
+    visual: {
+      before: "https://picsum.photos/id/1018/400/400",
+      after: "https://picsum.photos/id/1018/400/400?grayscale&blur=2"
+    }
   },
   "rgb-channels": {
     theory: "Color images typically store RGB (Red, Green, Blue) values for each pixel. Separating these channels allows analysis of each color component independently.",
@@ -39,7 +51,11 @@ const explanations: TaskExplanation = {
       "Color-based segmentation"
     ],
     furtherReading: "Fundamentals of Digital Image Processing by Anil K. Jain, Chapter 4",
-    creativityCorner: "Experiment with recombining color channels in different orders to create psychedelic effects. For example, map the red channel to blue, green to red, and blue to green."
+    creativityCorner: "Experiment with recombining color channels in different orders to create psychedelic effects. For example, map the red channel to blue, green to red, and blue to green.",
+    visual: {
+      before: "https://picsum.photos/id/1025/400/400",
+      after: "https://picsum.photos/id/1025/400/400?grayscale"
+    }
   },
   grayscale: {
     theory: "Grayscale conversion reduces a color image to shades of gray, eliminating color information while preserving luminance.",
@@ -50,7 +66,11 @@ const explanations: TaskExplanation = {
       "Emphasizing texture and shape over color"
     ],
     furtherReading: "Computer Vision: Algorithms and Applications by Richard Szeliski, Section 2.3",
-    creativityCorner: "Use grayscale to create a classic, timeless feel in your photos. It's also a great way to emphasize texture and form without the distraction of color."
+    creativityCorner: "Use grayscale to create a classic, timeless feel in your photos. It's also a great way to emphasize texture and form without the distraction of color.",
+    visual: {
+      before: "https://picsum.photos/id/10/400/400",
+      after: "https://picsum.photos/id/10/400/400?grayscale"
+    }
   },
   sobel: {
     theory: "Sobel edge detection uses gradient calculations to highlight regions of high spatial frequency, which often correspond to edges in images.",
@@ -61,7 +81,11 @@ const explanations: TaskExplanation = {
       "Image segmentation preprocessing"
     ],
     furtherReading: "Digital Image Processing Using MATLAB by Gonzalez, Woods & Eddins, Chapter 6",
-    creativityCorner: "Combine the output of a Sobel filter with the original image to create a 'sketch' effect. You can also color the edges to make them stand out."
+    creativityCorner: "Combine the output of a Sobel filter with the original image to create a 'sketch' effect. You can also color the edges to make them stand out.",
+    visual: {
+      before: "https://picsum.photos/id/1040/400/400",
+      after: "https://picsum.photos/id/1040/400/400?grayscale&blur=2"
+    }
   },
   segment: {
     theory: "Image segmentation partitions an image into multiple segments (sets of pixels, also known as super-pixels). The goal of segmentation is to simplify and/or change the representation of an image into something that is more meaningful and easier to analyze.",
@@ -127,7 +151,11 @@ const explanations: TaskExplanation = {
       "Edge detection"
     ],
     furtherReading: "Digital Image Processing by Gonzalez & Woods, Chapter 3",
-    creativityCorner: "Use Gaussian blur to create a 'dreamy' or 'soft focus' effect. You can also use it to de-emphasize the background and make the subject stand out."
+    creativityCorner: "Use Gaussian blur to create a 'dreamy' or 'soft focus' effect. You can also use it to de-emphasize the background and make the subject stand out.",
+    visual: {
+      before: "https://picsum.photos/id/1062/400/400",
+      after: "https://picsum.photos/id/1062/400/400?blur=5"
+    }
   },
   prewitt: {
     theory: "The Prewitt operator is used in image processing for edge detection. It is a discrete differentiation operator, computing an approximation of the gradient of the image intensity function.",
@@ -193,7 +221,11 @@ const explanations: TaskExplanation = {
       "Image enhancement"
     ],
     furtherReading: "Digital Image Processing by Gonzalez & Woods, Chapter 5",
-    creativityCorner: "The median filter is great for removing noise while preserving edges. Use it to clean up old photos or to create a 'painterly' effect."
+    creativityCorner: "The median filter is great for removing noise while preserving edges. Use it to clean up old photos or to create a 'painterly' effect.",
+    visual: {
+        before: "https://picsum.photos/id/20/400/400",
+        after: "https://picsum.photos/id/20/400/400?blur=2"
+    }
   },
   log: {
     theory: "The Laplacian of Gaussian (LoG) is a combination of Gaussian and Laplacian filters. It is used for edge detection.",
@@ -395,7 +427,7 @@ const explanations: TaskExplanation = {
   }
 };
 
-const defaultExplanation = {
+const defaultExplanation: TaskExplanation[string] = {
   theory: "This transformation applies computer vision algorithms to modify pixel values based on mathematical operations.",
   explanation: "The specific algorithm processes each pixel according to its formula, which may consider neighboring pixels, statistical properties, or frequency domain characteristics.",
   applications: [
@@ -404,12 +436,20 @@ const defaultExplanation = {
     "Computer vision systems"
   ],
   furtherReading: "Digital Image Processing by Gonzalez & Woods",
-  creativityCorner: "The sky is the limit! Try combining this operation with others to create your own unique effects."
+  creativityCorner: "The sky is the limit! Try combining this operation with others to create your own unique effects.",
 };
 
 const Learn = () => {
   const [selectedTask, setSelectedTask] = useState<ProcessingTask | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+  const [processedResult, setProcessedResult] = useState<{
+    type: "image" | "zip";
+    url: string;
+    filename: string;
+  } | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const tasksByCategory = getTasksByCategory();
 
   const filteredTasks = useMemo(() => {
@@ -435,7 +475,49 @@ const Learn = () => {
 
   const handleSelectTask = (task: ProcessingTask) => {
     setSelectedTask(task);
+    setProcessedResult(null);
   };
+
+  const handleImageSelected = (file: File) => {
+    if (originalImageUrl) {
+      URL.revokeObjectURL(originalImageUrl);
+    }
+    setSelectedImage(file);
+    const imageUrl = URL.createObjectURL(file);
+    setOriginalImageUrl(imageUrl);
+    setProcessedResult(null);
+  };
+
+  const handleProcess = async () => {
+    if (!selectedTask || !selectedImage) {
+      toast.error("Please select an image and a task");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await processImage(selectedTask.endpoint, selectedImage, {});
+      const result = await handleProcessedResponse(response);
+      setProcessedResult(result);
+      toast.success("Image processed successfully!");
+    } catch (error) {
+      console.error("Processing failed:", error);
+      toast.error(error instanceof Error ? error.message : "Processing failed");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (originalImageUrl) {
+        URL.revokeObjectURL(originalImageUrl);
+      }
+      if (processedResult?.url) {
+        URL.revokeObjectURL(processedResult.url);
+      }
+    };
+  }, [originalImageUrl, processedResult]);
 
   const taskInfo = selectedTask ? explanations[selectedTask.id] || defaultExplanation : null;
 
@@ -488,60 +570,87 @@ const Learn = () => {
                 </div>
               </div>
               <div className="col-span-3">
-                {taskInfo && selectedTask && (
-                  <Card className="shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="text-2xl">{selectedTask.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Accordion type="single" collapsible defaultValue="theory" className="w-full">
-                        <AccordionItem value="theory">
-                          <AccordionTrigger className="text-lg">The Gist</AccordionTrigger>
-                          <AccordionContent className="text-base">
-                            <p className="text-muted-foreground">{taskInfo.theory}</p>
-                          </AccordionContent>
-                        </AccordionItem>
-
-                        <AccordionItem value="how-it-works">
-                          <AccordionTrigger className="text-lg">Under the Hood</AccordionTrigger>
-                          <AccordionContent className="text-base">
-                            <p className="text-muted-foreground">{taskInfo.explanation}</p>
-                          </AccordionContent>
-                        </AccordionItem>
-
-                        <AccordionItem value="applications">
-                          <AccordionTrigger className="text-lg">Real-World Uses</AccordionTrigger>
-                          <AccordionContent>
-                            <ul className="list-disc pl-6 text-muted-foreground text-base">
-                              {taskInfo.applications.map((app, index) => (
-                                <li key={index} className="mb-1">{app}</li>
-                              ))}
-                            </ul>
-                          </AccordionContent>
-                        </AccordionItem>
-
-                        <AccordionItem value="creativity-corner">
-                          <AccordionTrigger className="text-lg">Creativity Corner</AccordionTrigger>
-                          <AccordionContent className="text-base">
-                            <p className="text-muted-foreground">{taskInfo.creativityCorner}</p>
-                          </AccordionContent>
-                        </AccordionItem>
-
-                        <AccordionItem value="further-reading">
-                          <AccordionTrigger className="text-lg">Dive Deeper</AccordionTrigger>
-                          <AccordionContent className="text-base">
-                            <p className="text-muted-foreground">{taskInfo.furtherReading}</p>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </CardContent>
-                  </Card>
+                {!selectedTask && (
+                  <div className="flex flex-col items-center justify-center h-full bg-background rounded-lg shadow-inner p-12">
+                    <h2 className="text-2xl font-semibold text-muted-foreground">Select an operation</h2>
+                    <p className="text-muted-foreground mt-2">...and let the learning begin!</p>
+                  </div>
                 )}
-                 {!selectedTask && (
-                    <div className="flex flex-col items-center justify-center h-full bg-background rounded-lg shadow-inner p-12">
-                        <h2 className="text-2xl font-semibold text-muted-foreground">Select an operation</h2>
-                        <p className="text-muted-foreground mt-2">...and let the learning begin!</p>
-                    </div>
+                {selectedTask && (
+                  <div className="space-y-8">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Live Demo</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <ImageUploader onImageSelected={handleImageSelected} />
+                          <div>
+                            <h4 className="font-semibold mb-2 text-center">Result</h4>
+                            <div className="aspect-square bg-muted rounded-md flex items-center justify-center">
+                              {processedResult ? (
+                                <img src={processedResult.url} alt="Processed" className="rounded-md" />
+                              ) : (
+                                <p className="text-muted-foreground">Your result will appear here</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-center mt-4">
+                          <Button onClick={handleProcess} disabled={!selectedImage || isProcessing}>
+                            {isProcessing ? "Processing..." : `Apply ${selectedTask.name}`}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="text-2xl">{selectedTask.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Accordion type="single" collapsible defaultValue="theory" className="w-full">
+                          <AccordionItem value="theory">
+                            <AccordionTrigger className="text-lg">The Gist</AccordionTrigger>
+                            <AccordionContent className="text-base">
+                              <p className="text-muted-foreground">{taskInfo.theory}</p>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem value="how-it-works">
+                            <AccordionTrigger className="text-lg">Under the Hood</AccordionTrigger>
+                            <AccordionContent className="text-base">
+                              <p className="text-muted-foreground">{taskInfo.explanation}</p>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem value="applications">
+                            <AccordionTrigger className="text-lg">Real-World Uses</AccordionTrigger>
+                            <AccordionContent>
+                              <ul className="list-disc pl-6 text-muted-foreground text-base">
+                                {taskInfo.applications.map((app, index) => (
+                                  <li key={index} className="mb-1">{app}</li>
+                                ))}
+                              </ul>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem value="creativity-corner">
+                            <AccordionTrigger className="text-lg">Creativity Corner</AccordionTrigger>
+                            <AccordionContent className="text-base">
+                              <p className="text-muted-foreground">{taskInfo.creativityCorner}</p>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem value="further-reading">
+                            <AccordionTrigger className="text-lg">Dive Deeper</AccordionTrigger>
+                            <AccordionContent className="text-base">
+                              <p className="text-muted-foreground">{taskInfo.furtherReading}</p>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </CardContent>
+                    </Card>
+                  </div>
                 )}
               </div>
             </div>
