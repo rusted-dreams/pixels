@@ -8,7 +8,7 @@ import numpy as np
 app = FastAPI()
 
 origins = [
-    "0.0.0.0"
+    "0.0.0.0",
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
     "http://localhost",
