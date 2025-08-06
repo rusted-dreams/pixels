@@ -7,15 +7,7 @@ import numpy as np
 
 app = FastAPI()
 
-origins = [
-    "0.0.0.0",
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:5173",
-    "http://localhost:5000"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
