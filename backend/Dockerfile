@@ -8,8 +8,12 @@ ENV PYTHONUNBUFFERED 1
 # Set work directory
 WORKDIR ./
 
-RUN apt-get update && apt-get install -y curl
-RUN apt-get update && apt-get install -y libgl1
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglib2.0-0 \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pip install uv
 
@@ -23,7 +27,7 @@ COPY . .
 RUN uv sync
 
 # Expose container port
-EXPOSE 8001
+EXPOSE 8000
 
 # Start the app using uvicorn
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
