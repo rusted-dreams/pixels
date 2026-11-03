@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -27,31 +27,21 @@ const ProcessingWorkflow = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [taskParameters, setTaskParameters] = useState<Record<string, string | number>>({});
 
-  // Clean up object URLs when component unmounts
-  useEffect(() => {
-    return () => {
-      // Cleanup original image URL
-      if (originalImageUrl) {
-        URL.revokeObjectURL(originalImageUrl);
-      }
+  const requestVersion = useRef(0);
 
-      // Cleanup processed result URL
-      if (processedResult?.url) {
-        URL.revokeObjectURL(processedResult.url);
-      }
-
-      // Cleanup ZIP content URLs
-      if (zipContents.length > 0) {
-        revokeObjectUrls(zipContents.map(item => item.url));
-      }
-    };
-  }, []);
+  useEffect(() => () => { requestVersion.current += 1; }, []);
+  useEffect(() => () => {
+    if (originalImageUrl) URL.revokeObjectURL(originalImageUrl);
+  }, [originalImageUrl]);
+  useEffect(() => () => {
+    if (processedResult?.url) URL.revokeObjectURL(processedResult.url);
+  }, [processedResult]);
+  useEffect(() => () => {
+    revokeObjectUrls(zipContents.map(item => item.url));
+  }, [zipContents]);
 
   const handleImageSelected = (file: File) => {
-    // Cleanup previous URLs
-    if (originalImageUrl) {
-      URL.revokeObjectURL(originalImageUrl);
-    }
+    requestVersion.current += 1;
     
     setSelectedImage(file);
     
@@ -65,12 +55,15 @@ const ProcessingWorkflow = () => {
   };
 
   const handleMultipleImagesSelected = (files: File[]) => {
+    requestVersion.current += 1;
     setSelectedImages(files);
     
     if (files.length > 0) {
       // Use the first image for preview
       const imageUrl = URL.createObjectURL(files[0]);
       setOriginalImageUrl(imageUrl);
+    } else {
+      setOriginalImageUrl(null);
     }
     
     // Reset processed results when new images are selected
@@ -79,7 +72,9 @@ const ProcessingWorkflow = () => {
   };
 
   const handleTaskSelected = (task: ProcessingTask) => {
+    requestVersion.current += 1;
     setSelectedTask(task);
+    setTaskParameters(Object.fromEntries((task.parameters ?? []).map(param => [param.id, param.defaultValue])));
     
     // Reset processed results when a new task is selected
     setProcessedResult(null);
@@ -113,6 +108,7 @@ const ProcessingWorkflow = () => {
     }
 
     setIsProcessing(true);
+    const version = ++requestVersion.current;
     
     try {
       // Process the image with parameters
@@ -120,7 +116,12 @@ const ProcessingWorkflow = () => {
       
       // Handle the response based on its type
       const result = await handleProcessedResponse(response);
+      if (version !== requestVersion.current) {
+        URL.revokeObjectURL(result.url);
+        return;
+      }
       setProcessedResult(result);
+      setZipContents([]);
       
       // If it's a ZIP file with multiple images, extract them
       if (result.type === "zip") {
@@ -128,6 +129,10 @@ const ProcessingWorkflow = () => {
           // Get the blob from the response to extract ZIP contents
           const zipBlob = await response.clone().blob();
           const extractedFiles = await extractZipContents(zipBlob);
+          if (version !== requestVersion.current) {
+            revokeObjectUrls(extractedFiles.map(item => item.url));
+            return;
+          }
           setZipContents(extractedFiles);
         } catch (zipError) {
           console.error("Failed to extract ZIP contents:", zipError);
@@ -138,7 +143,9 @@ const ProcessingWorkflow = () => {
       toast.success("Image processed successfully!");
     } catch (error) {
       console.error("Processing failed:", error);
-      toast.error(error instanceof Error ? error.message : "Processing failed");
+      if (version === requestVersion.current) {
+        toast.error(error instanceof Error ? error.message : "Processing failed");
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -156,7 +163,8 @@ const ProcessingWorkflow = () => {
       </div>
       
       {selectedTask?.parameters && selectedTask.parameters.length > 0 && (
-        <TaskParameters 
+        <TaskParameters
+          key={selectedTask.id}
           parameters={selectedTask.parameters}
           onChange={handleParametersChange}
         />

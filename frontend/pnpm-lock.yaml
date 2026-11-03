@@ -95,6 +95,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.56.2
         version: 5.74.4(react@18.3.1)
+      '@techstark/opencv-js':
+        specifier: 4.10.0-release.1
+        version: 4.10.0-release.1
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -212,6 +215,9 @@ importers:
         version: 5.4.18(@types/node@22.14.1)
 
 packages:
+
+  '@techstark/opencv-js@4.10.0-release.1':
+    resolution: {integrity: sha512-S4XELidRiQeA0q1s9VQLo540wCxUo24r1O4C+LqZ6llX+sPCXvZCPv3Ice8dEIr0uavyZ8YZeKXSBdDgMXSXjw==}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -2637,6 +2643,8 @@ packages:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
 
 snapshots:
+
+  '@techstark/opencv-js@4.10.0-release.1': {}
 
   '@alloc/quick-lru@5.2.0': {}
 
